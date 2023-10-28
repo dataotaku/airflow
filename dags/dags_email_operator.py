@@ -12,6 +12,6 @@ with DAG(
     send_email_task = EmailOperator(
         task_id='send_email_task',
         to='unho.chang@gmail.com',
-        subject='Airflow 성공메일',
-        html_content='WSL Airflow에서 보내는 메일 입니다'
+        subject='Airflow 접속 확인 메일',
+        html_content='오늘도 즐거운 Airflow 생활되시기 바랍니다. <br/>{{ data_interval_start }}에 <br/>WSL Airflow에서 장운호 님께 보내드리는 는 메일 입니다'
     )
