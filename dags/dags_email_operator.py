@@ -6,7 +6,7 @@ from airflow.operators.email import EmailOperator
 with DAG(
     dag_id='dags_email_operator',
     schedule='0 8 * * *',
-    start_date=pendulum.datetime(2003, 10, 28, tz='Asia/Seoul'),
+    start_date=pendulum.datetime(2023, 10, 28, tz='Asia/Seoul'),
     catchup=False
 ) as dag:
     send_email_task = EmailOperator(
