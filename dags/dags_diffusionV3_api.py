@@ -10,7 +10,7 @@ with DAG(
 ) as dag:
     daily_diffusion_index = DiffusionApiToCsvOperator(
         task_id='daily_diffusion_index',
-        path='/opt/airflow/files/DailyAirDiffusionIndex/{{date_interval_end.in_timezone('Asia/Seoul') | ds_nodash}}',
+        path="/opt/airflow/files/DailyAirDiffusionIndex/{{data_interval_end.in_timezone('Asia/Seoul') | ds_nodash}}",
         file_name='daily_diffusion_index.csv'
     )
 
