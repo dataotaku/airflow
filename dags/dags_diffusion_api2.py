@@ -131,14 +131,14 @@ with DAG(
 
         for url in yesterday_urls:
             print(url)
-            datum = requests.get(url)
-            xd = XMLtoDict()
-            data = xd.parse(datum.content)
-            print(data)
+            # datum = requests.get(url)
+            # xd = XMLtoDict()
+            # data = xd.parse(datum.content)
+            # print(data)
             try:
-                # datum = requests.get(url)
-                # xd = XMLtoDict()
-                # data = xd.parse(datum.content)
+                datum = requests.get(url)
+                xd = XMLtoDict()
+                data = xd.parse(datum.content)
                 # print(data)
                 dum01 = list(data['response']['body']['items']['item'].keys())[3:]
                 dum02 = list(data['response']['body']['items']['item'].values())[3:]
