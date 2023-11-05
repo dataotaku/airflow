@@ -90,8 +90,6 @@ with DAG(
         import requests
         import numpy as np
         from xml_to_dict import XMLtoDict
-        from datetime import datetime
-        from datetime import timedelta
 
         http_conn_id = 'apis_data_go_kr'
         path = "/opt/airflow/files/DailyAirDiffusionIndex/{{data_interval_end.in_timezone('Asia/Seoul') | ds_nodash}}"
@@ -134,7 +132,7 @@ with DAG(
                 datum = requests.get(url)
                 xd = XMLtoDict()
                 data = xd.parse(datum.content)
-                # print(data)
+                print(data)
 
                 dum01 = list(data['response']['body']['items']['item'].keys())[3:]
                 dum02 = list(data['response']['body']['items']['item'].values())[3:]
@@ -144,7 +142,7 @@ with DAG(
                 dum03['areaNo'] = data['response']['body']['items']['item']['areaNo']
                 dum03['date'] = data['response']['body']['items']['item']['date']
                 #print(dum03)
-                yesterday_api.append(datum)
+                yesterday_api.append(dum03)
             except:
                 pass
 
