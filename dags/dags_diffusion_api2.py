@@ -141,7 +141,7 @@ with DAG(
                 dum03['code'] = data['response']['body']['items']['item']['code']
                 dum03['areaNo'] = data['response']['body']['items']['item']['areaNo']
                 dum03['date'] = data['response']['body']['items']['item']['date']
-                #print(dum03)
+                print(dum03.head())
                 yesterday_api.append(dum03)
             except:
                 pass
