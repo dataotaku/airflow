@@ -140,7 +140,7 @@ with DAG(
         except:
             pass
 
-    yesterday_aggr = pd.concat(yesterday_api)
+        yesterday_aggr = pd.concat(yesterday_api)
 
         yesterday_aggr['stagnant_idx'] = yesterday_aggr['stagnant_idx'].astype(str)
         yesterday_aggr['time'] = yesterday_aggr['time'].astype(str)
