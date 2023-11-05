@@ -1,6 +1,6 @@
-from operators.diffusion_api_to_csv import DiffusionApiToCsvOperator
 from airflow import DAG 
 from airflow.operators.python import PythonOperator
+from airflow.operators.email import EmailOperator
 from airflow.hooks.base import BaseHook
 from airflow.models import Variable
 import pendulum
@@ -171,4 +171,11 @@ with DAG(
         op_kwargs={'current_date':'{{data_interval_start.in_timezone("Asia/Seoul") | ds_nodash}}'}
     )
 
-    data_get_level1_test >> data_get_level2_test >> data_get_time_test >> data_go_api_call
+    send_email_task = EmailOperator(
+        task_id='send_email_task',
+        to='unho.chang@gmail.com',
+        subject='{{data_interval_start.in_timezone("Asia/Seoul") | ds}} Airflow 대기정체지수 데이터 API 다운로드 결과 안내',
+        html_content='오늘도 즐거운 Airflow 생활되시기 바랍니다. <br/>{{ data_interval_start }}의 <br/> 대기정체지수 다운로드 결과는 {{ ti.xcom_pull(task_ids="data_go_api_call") }} 입니다.<br/> 레노버 WSL Airflow에서 장운호 님께 보내드리는 메일 입니다. <br/> 감사합니다. <br/>'
+    )
+
+    data_get_level1_test >> data_get_level2_test >> data_get_time_test >> data_go_api_call >> send_email_task
