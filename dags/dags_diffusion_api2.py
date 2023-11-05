@@ -93,7 +93,7 @@ with DAG(
         from xml_to_dict import XMLtoDict
 
         http_conn_id = 'apis.data.go.kr'
-        path = "/opt/airflow/files/DailyAirDiffusionIndex/{{data_interval_end.in_timezone('Asia/Seoul') | ds_nodash}}"
+        path = f"/opt/airflow/files/DailyAirDiffusionIndex/{str(kwargs['current_date'])}"
         print(path)
         file_name = 'daily_diffusion_index.csv'
         #port=':8088'
@@ -168,6 +168,7 @@ with DAG(
     data_go_api_call = PythonOperator(
         task_id='data_go_api_call',
         python_callable=call_api
+        op_kwargs={'current_date':'{{data_interval_end.in_timezone('Asia/Seoul') | ds_nodash}}'}
     )
 
     data_get_level1_test >> data_get_level2_test >> data_get_time_test >> data_go_api_call
