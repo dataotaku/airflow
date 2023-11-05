@@ -5,7 +5,7 @@ import pendulum
 with DAG(
     dag_id='dags_diffusinoV3_api',
     schedule='0 5 * * *',
-    start_date=pendulum.datetime(2023, 11, 6, tz='Asia/Seoul'),
+    start_date=pendulum.datetime(2023, 11, 5, tz='Asia/Seoul'),
     catchup=False
 ) as dag:
     daily_diffusion_index = DiffusionApiToCsvOperator(

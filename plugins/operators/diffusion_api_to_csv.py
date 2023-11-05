@@ -10,7 +10,7 @@ class DiffusionApiToCsvOperator(BaseOperator):
         self.http_conn_id = 'apis_data_go_kr'
         self.path = path
         self.file_name = file_name
-        self.endpoint = '1360000/LivingWthrIdxServiceV3/getAirDiffusionIdxV3' 
+        self.endpoint = '1360000/LivingWthrIdxServiceV4/getAirDiffusionIdxV4' 
         self.apikey = '{{var.value.data_go_kr_apikey1}}'
         self.base_dt = base_dt
 
