@@ -22,7 +22,7 @@ class DiffusionApiToCsvOperator(BaseOperator):
         from datetime import timedelta
 
         connection = BaseHook.get_connection(self.http_conn_id)
-        self.base_url = f'http://{connection.host}:{connection.port}/{self.endpoint}'
+        self.base_url = f'http://{connection.host}/{self.endpoint}'
 
         area_lv1 = self.get_level_one()
         print(area_lv1)
@@ -76,7 +76,8 @@ class DiffusionApiToCsvOperator(BaseOperator):
 
         headers = {'Content-Type': 'application/xml',
                    'charset': 'utf-8',
-                   'Accept': '*/*'}
+                   'Accept': '*/*'
+                   }
 
         datum = requests.get(url, headers)
         xd = XMLtoDict()
