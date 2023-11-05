@@ -5,7 +5,7 @@ import pendulum
 import pandas as pd
 
 with DAG(
-    dag_id='dags_diffusinoV3_api',
+    dag_id='dags_diffusion_api2',
     schedule='0 5 * * *',
     start_date=pendulum.datetime(2023, 11, 4, tz='Asia/Seoul'),
     catchup=False
