@@ -90,72 +90,84 @@ with DAG(
         python_callable=get_time
     )
 
-    http_conn_id = 'apis_data_go_kr'
-    path = "/opt/airflow/files/DailyAirDiffusionIndex/{{data_interval_end.in_timezone('Asia/Seoul') | ds_nodash}}"
-    file_name = 'daily_diffusion_index.csv'
-    endpoint = '1360000/LivingWthrIdxServiceV4/getAirDiffusionIdxV4' 
-    apikey = '{{var.value.data_go_kr_apikey1}}'
+    def call_api(**kwargs):
+        import os
+        import requests
+        import numpy as np
+        from xml_to_dict import XMLtoDict
+        from datetime import datetime
+        from datetime import timedelta
 
-    import os
-    import requests
-    import numpy as np
-    from xml_to_dict import XMLtoDict
-    from datetime import datetime
-    from datetime import timedelta
-    
-    base_url = f'http://{http_conn_id}/{endpoint}'
-        
-    sido_urls = []
-    for area_num in area_lv1:
-        for time_tgt in time_here:
-            sido_urls.append("{}?ServiceKey={}&areaNo={}&time={}&dataType={}".format(self.base_url, self.apikey, area_num, time_tgt, "xml"))
+        http_conn_id = 'apis_data_go_kr'
+        path = "/opt/airflow/files/DailyAirDiffusionIndex/{{data_interval_end.in_timezone('Asia/Seoul') | ds_nodash}}"
+        print(path)
+        file_name = 'daily_diffusion_index.csv'
+        endpoint = '1360000/LivingWthrIdxServiceV4/getAirDiffusionIdxV4' 
+        apikey = '{{var.value.data_go_kr_apikey1}}'
+        print(apikey)
+        base_url = f'http://{http_conn_id}/{endpoint}'
+        print(base_url)
+        sido_urls = []
 
-    area_lv2 = self.get_level_two()
-    print(area_lv2)
+        ti = kwargs['ti']
 
-    sgg_urls = []
-    for area_num in area_lv2:
-        for time_tgt in time_here:
-            sgg_urls.append("{}?ServiceKey={}&areaNo={}&time={}&dataType={}".format(self.base_url, self.apikey, area_num, time_tgt, "xml"))
+        area_lv1 = ti.xcom_pull(task_ids='data_get_level1_test')
+        area_lv2 = ti.xcom_pull(task_ids='data_get_level2_test')
+        time_here = ti.xcom_pull(task_ids='data_get_time_test')
 
-    yesterday_urls = sido_urls[::3] + sgg_urls[::3]
+        for area_num in area_lv1:
+            for time_tgt in time_here:
+                sido_urls.append("{}?ServiceKey={}&areaNo={}&time={}&dataType={}".format(base_url, apikey, area_num, time_tgt, "xml"))
+            
+        sido_urls = []
+        for area_num in area_lv1:
+            for time_tgt in time_here:
+                sido_urls.append("{}?ServiceKey={}&areaNo={}&time={}&dataType={}".format(base_url, apikey, area_num, time_tgt, "xml"))
 
-    yesterday_api = []
-    for url in yesterday_urls:
-        try:
-            datum = requests.get(url)
-            xd = XMLtoDict()
-            data = xd.parse(datum.content)
-            # print(data)
 
-            dum01 = list(data['response']['body']['items']['item'].keys())[3:]
-            dum02 = list(data['response']['body']['items']['item'].values())[3:]
-            dum02 = [x if x != None else np.nan for x in dum02]
-            dum03 = pd.DataFrame({'time':[int(x.replace('h','')) for x in dum01], 'stagnant_idx':dum02})
-            dum03['code'] = data['response']['body']['items']['item']['code']
-            dum03['areaNo'] = data['response']['body']['items']['item']['areaNo']
-            dum03['date'] = data['response']['body']['items']['item']['date']
-            #print(dum03)
-            yesterday_api.append(datum)
-        except:
-            pass
+        sgg_urls = []
+        for area_num in area_lv2:
+            for time_tgt in time_here:
+                sgg_urls.append("{}?ServiceKey={}&areaNo={}&time={}&dataType={}".format(base_url, apikey, area_num, time_tgt, "xml"))
 
-    yesterday_aggr = pd.concat(yesterday_api)
+        yesterday_urls = sido_urls[::3] + sgg_urls[::3]
+
+        yesterday_api = []
+        for url in yesterday_urls:
+            try:
+                datum = requests.get(url)
+                xd = XMLtoDict()
+                data = xd.parse(datum.content)
+                # print(data)
+
+                dum01 = list(data['response']['body']['items']['item'].keys())[3:]
+                dum02 = list(data['response']['body']['items']['item'].values())[3:]
+                dum02 = [x if x != None else np.nan for x in dum02]
+                dum03 = pd.DataFrame({'time':[int(x.replace('h','')) for x in dum01], 'stagnant_idx':dum02})
+                dum03['code'] = data['response']['body']['items']['item']['code']
+                dum03['areaNo'] = data['response']['body']['items']['item']['areaNo']
+                dum03['date'] = data['response']['body']['items']['item']['date']
+                #print(dum03)
+                yesterday_api.append(datum)
+            except:
+                pass
+
+        yesterday_aggr = pd.concat(yesterday_api)
 
         yesterday_aggr['stagnant_idx'] = yesterday_aggr['stagnant_idx'].astype(str)
         yesterday_aggr['time'] = yesterday_aggr['time'].astype(str)
         #yesterday_aggr.shape
         diffu_data = yesterday_aggr.drop_duplicates().copy()
 
-        if not os.path.exists(self.path):
-            os.system(f'mkdir -p {self.path}')
+        if not os.path.exists(path):
+            os.system(f'mkdir -p {path}')
         
-        diffu_data.to_csv(self.path + '/' + self.file_name, encoding='utf-8', index=False)
-        
+        diffu_data.to_csv(path + '/' + file_name, encoding='utf-8', index=False)
 
 
+    data_go_api_call = PythonOperator(
+        task_id='data_go_api_call',
+        python_callable=call_api
+    )
 
-        
-    
-
-    data_get_level1_test >> data_get_level2_test >> data_get_time_test >> daily_diffusion_index
+    data_get_level1_test >> data_get_level2_test >> data_get_time_test >> data_go_api_call
