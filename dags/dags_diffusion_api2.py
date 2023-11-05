@@ -126,14 +126,18 @@ with DAG(
         yesterday_urls = sido_urls[::3] + sgg_urls[::3]
 
         yesterday_api = []
+
         for url in yesterday_urls:
             print(url)
+            datum = requests.get(url)
+            xd = XMLtoDict()
+            data = xd.parse(datum.content)
+            print(data)
             try:
-                datum = requests.get(url)
-                xd = XMLtoDict()
-                data = xd.parse(datum.content)
-                print(data)
-
+                # datum = requests.get(url)
+                # xd = XMLtoDict()
+                # data = xd.parse(datum.content)
+                # print(data)
                 dum01 = list(data['response']['body']['items']['item'].keys())[3:]
                 dum02 = list(data['response']['body']['items']['item'].values())[3:]
                 dum02 = [x if x != None else np.nan for x in dum02]
