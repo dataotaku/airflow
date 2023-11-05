@@ -95,10 +95,11 @@ with DAG(
         path = "/opt/airflow/files/DailyAirDiffusionIndex/{{data_interval_end.in_timezone('Asia/Seoul') | ds_nodash}}"
         print(path)
         file_name = 'daily_diffusion_index.csv'
+        port=':8088'
         endpoint = '1360000/LivingWthrIdxServiceV4/getAirDiffusionIdxV4' 
         apikey = Variable.get("data_go_kr_apikey1")
         print(apikey)
-        base_url = f'http://{http_conn_id}/{endpoint}'
+        base_url = f'http://{http_conn_id}{port}/{endpoint}'
         print(base_url)
         sido_urls = []
 
