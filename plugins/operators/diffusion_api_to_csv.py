@@ -25,6 +25,7 @@ class DiffusionApiToCsvOperator(BaseOperator):
         self.base_url = f'http://{connection.host}:{connection.port}/{self.endpoint}'
 
         area_lv1 = self.get_level_one()
+        print(area_lv1)
         
 
         time_here = self.get_time()
@@ -35,6 +36,8 @@ class DiffusionApiToCsvOperator(BaseOperator):
                 sido_urls.append("{}?ServiceKey={}&areaNo={}&time={}&dataType={}".format(self.base_url, self.apikey, area_num, time_tgt, "xml"))
 
         area_lv2 = self.get_level_two()
+        print(area_lv2)
+
         sgg_urls = []
         for area_num in area_lv2:
             for time_tgt in time_here:
@@ -94,7 +97,7 @@ class DiffusionApiToCsvOperator(BaseOperator):
         """
         시구 기준의 지역코드를 불러옵니다.
         """
-        code=pd.read_excel("../files/지역별 지점코드(20220701).xlsx")
+        code=pd.read_excel("/opt/airflow/plugins/files/지역별 지점코드(20220701).xlsx")
         # code=pd.read_excel("./data/KIKcd_B_20180122.xlsx")
         # code["ji_code"] = code["법정동코드"].astype(str).str[0:5]
         code_sido = code.loc[pd.Series.isnull(code['2단계']), '행정구역코드'].astype(str)
@@ -109,7 +112,7 @@ class DiffusionApiToCsvOperator(BaseOperator):
         """
         시구 기준의 지역코드를 불러옵니다.
         """
-        code=pd.read_excel("../files/지역별 지점코드(20220701).xlsx")
+        code=pd.read_excel("/opt/airflow/plugins/files/지역별 지점코드(20220701).xlsx")
         # code=pd.read_excel("./data/KIKcd_B_20180122.xlsx")
         # code["ji_code"] = code["법정동코드"].astype(str).str[0:5]
         code_sgg = code.loc[(code['1단계'] == '경기도') & (code['2단계'].isin(['의정부시', '동두천시', '파주시',\
