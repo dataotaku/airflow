@@ -10,12 +10,6 @@ with DAG(
     start_date=pendulum.datetime(2023, 11, 5, tz='Asia/Seoul'),
     catchup=False
 ) as dag:
-    
-    daily_diffusion_index = DiffusionApiToCsvOperator(
-        task_id='daily_diffusion_index',
-        path="/opt/airflow/files/DailyAirDiffusionIndex/{{data_interval_end.in_timezone('Asia/Seoul') | ds_nodash}}",
-        file_name='daily_diffusion_index.csv'
-    )
 
     def xlsx_read():
         """
@@ -134,6 +128,7 @@ with DAG(
 
         yesterday_api = []
         for url in yesterday_urls:
+            print(url)
             try:
                 datum = requests.get(url)
                 xd = XMLtoDict()
