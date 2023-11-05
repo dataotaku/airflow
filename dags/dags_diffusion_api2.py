@@ -1,6 +1,7 @@
 from operators.diffusion_api_to_csv import DiffusionApiToCsvOperator
 from airflow import DAG 
 from airflow.operators.python import PythonOperator
+from airflow.models import Variable
 import pendulum
 import pandas as pd
 
@@ -97,7 +98,7 @@ with DAG(
         print(path)
         file_name = 'daily_diffusion_index.csv'
         endpoint = '1360000/LivingWthrIdxServiceV4/getAirDiffusionIdxV4' 
-        apikey = '{{var.value.data_go_kr_apikey1}}'
+        apikey = Variable.get("data_go_key_apikey1")
         print(apikey)
         base_url = f'http://{http_conn_id}/{endpoint}'
         print(base_url)
