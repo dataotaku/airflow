@@ -167,7 +167,7 @@ with DAG(
 
     data_go_api_call = PythonOperator(
         task_id='data_go_api_call',
-        python_callable=call_api
+        python_callable=call_api,
         op_kwargs={'current_date':'{{data_interval_end.in_timezone("Asia/Seoul") | ds_nodash}}'}
     )
 
