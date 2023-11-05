@@ -60,10 +60,12 @@ with DAG(
     )
 
     def get_time():
+        from pytz import timezone
         from datetime import datetime
         from datetime import timedelta
+        KST = timezone('Asia/Seoul')
         # {{data_interval_end}} 활용을 해야 하는 것은 아닌지???? 20231105 0748
-        start_str = (datetime.today() + timedelta(days=-1)).strftime("%Y%m%d")
+        start_str = (datetime.today().astimezone(KST) + timedelta(days=-1)).strftime("%Y%m%d")
         start_date = datetime.strptime(start_str, "%Y%m%d")
         #start_date
         numdays = 1
