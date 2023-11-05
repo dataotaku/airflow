@@ -36,7 +36,7 @@ with DAG(
     
     data_excel_read_test = PythonOperator(
         task_id='data_excel_read_test',
-        python_callable='xlsx_read'
+        python_callable=xlsx_read
     )
 
     data_excel_read_test >> daily_diffusion_index
